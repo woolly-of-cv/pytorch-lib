@@ -1,0 +1,7 @@
+torchsummary==1.5.1
+torchvision==0.10.0
+opencv_python_headless==4.5.2.54
+albumentations==1.0.0
+matplotlib==3.4.2
+torch==1.9.0
+numpy==1.21.0
