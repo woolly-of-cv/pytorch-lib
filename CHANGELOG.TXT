@@ -3,4 +3,4 @@ RELEASES
 
 0.0.1 (30/06/2021)
 -------------------
-- First Release 
+- Intial Release 
