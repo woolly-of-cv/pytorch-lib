@@ -1,5 +1,5 @@
 # Woolly-of-CV
-This repo containsthe starter templete for CV Models built by Team_Woolly
+This repo contains the Machine Learning and Computer Vision Library for Pytorchbuilt by Team_Woolly
 
 ## Contributers
 * [Ammar Adil](https://github.com/adilsammar)
@@ -10,6 +10,6 @@ This repo containsthe starter templete for CV Models built by Team_Woolly
 ## Installation 
 
 ```
-pip install woolly-starter
+pip install Woolly-lib==0.0.1
 ```
-* URL : https://pypi.org/project/woolly-starter/
+* URL -> https://pypi.org/project/Woolly-lib/0.0.1/
