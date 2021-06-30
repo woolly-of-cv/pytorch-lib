@@ -12,4 +12,4 @@ This repo contains the Machine Learning and Computer Vision Library for Pytorchb
 ```
 pip install Woolly-lib==0.0.1
 ```
-
+* URL -> https://pypi.org/project/Woolly-lib/0.0.1/
