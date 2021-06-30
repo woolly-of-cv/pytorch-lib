@@ -1,5 +1,5 @@
 # Woolly-of-CV
-This repo contains the Machine Learning and Computer Vision Library for Pytorchbuilt by Team_Woolly
+This repo contains the Machine Learning and Computer Vision Library for Pytorch built by Team_Woolly
 
 ## Contributers
 * [Ammar Adil](https://github.com/adilsammar)
