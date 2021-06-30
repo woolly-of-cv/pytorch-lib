@@ -10,6 +10,6 @@ This repo contains the Machine Learning and Computer Vision Library for Pytorchb
 ## Installation 
 
 ```
-pip install woolly-starter
+pip install Woolly-lib==0.0.1
 ```
-* URL : https://pypi.org/project/woolly-starter/
+
