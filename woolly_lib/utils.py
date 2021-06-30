@@ -35,16 +35,19 @@ def print_modal_summary(model):
         model (Net): Model Instance
     """
     print(f'----------------------------------------------------------------')
-    print(f'| {"Name":30}\t{"Shape":15}\tParams |')
+    print(f'| {"Name":25}\t{"Shape":20}\tParams |')
     print(f'----------------------------------------------------------------')
     total = 0
     for name, param in model.named_parameters():
         if param.requires_grad:
             count = np.prod(list(param.data.shape))
             total += count
-            print(f'| {name:30}\t{str(list(param.data.shape)):15}\t{count:6} |')
+            
+            nout = name.split('.')
+            nout = ".".join(nout[:len(nout)-1])
+            print(f'| {nout:25}\t{str(list(param.data.shape)):20}\t{count:6} |')
     print(f'----------------------------------------------------------------')
-    print(f'| {"Total":30}\t{"":15}\t{total:6} |')
+    print(f'| {"Total":25}\t{"":20}\t{total:6} |')
     print(f'----------------------------------------------------------------')
 
 

@@ -24,6 +24,26 @@ def print_samples(loader, class_map, count=16):
             plt.imshow(imgs[i].numpy().transpose(1, 2, 0))
         break
 
+def print_samples_native(loader, class_map, count=16):
+    """Print samples input images
+
+    Args:
+        loader (DataLoader): dataloader for training data
+        count (int, optional): Number of samples to print. Defaults to 16.
+    """
+    # Print Random Samples
+    if not count % 8 == 0:
+        return
+
+    classes = list(class_map.keys())
+    fig = plt.figure(figsize=(18, 6))
+    for data, labels, _, _ in loader:
+        for i in range(count):
+            ax = fig.add_subplot(int(count/8), 8, i + 1, xticks=[], yticks=[])
+            ax.set_title(f'{classes[labels[0][i]]}\n{classes[labels[1][i].item()]}\n{classes[labels[2][i].item()]}\n{classes[labels[3][i].item()]}')
+            plt.imshow(data[i].numpy().transpose(1, 2, 0))
+        break
+
 def print_samples_ricap(loader, class_map, ricap_beta=0.4, count=16):
     """Print samples input images
 
