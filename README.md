@@ -10,6 +10,6 @@ This repo contains the Machine Learning and Computer Vision Library for Pytorch 
 ## Installation 
 
 ```
-pip install woolly-lib==0.0.1
+pip install woollylib==0.1.0
 ```
-* URL : https://pypi.org/project/woolly-lib/0.0.1/
+* URL : https://pypi.org/project/woollylib/0.1.0/
