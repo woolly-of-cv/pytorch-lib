@@ -5,7 +5,7 @@ from torch.utils.data import Dataset, DataLoader
 import glob
 from PIL import Image
 
-from woolly_lib.transform import convert_to_tensor
+from woollylib.transform import convert_to_tensor
 
 torch.manual_seed(1)
 

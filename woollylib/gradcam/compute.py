@@ -2,10 +2,10 @@
 
 from torch.utils import data
 
-from woolly_lib.dataset import WyCustomDataset
-from woolly_lib.transform import BASE_PROFILE, get_transform
-from woolly_lib.gradcam.gradcam import GradCAM
-from woolly_lib.gradcam.util import get_prediction_for_image, generate_heat_map, apply_heatmap_to_image, plot_output
+from woollylib.dataset import WyCustomDataset
+from woollylib.transform import BASE_PROFILE, get_transform
+from woollylib.gradcam.gradcam import GradCAM
+from woollylib.gradcam.util import get_prediction_for_image, generate_heat_map, apply_heatmap_to_image, plot_output
 
 
 def compute_gradcam(model, class_map, path='./data', device='cpu'):
