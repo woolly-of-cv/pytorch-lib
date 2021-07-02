@@ -84,6 +84,6 @@ ricap_profile = {
 }
 use_cuda, device = get_device()
 
-#train_loader, test_loader = get_cifar_loader(get_transform(train_profile), get_transform(normalize), batch_size=batch_size, use_cuda=use_cuda)
+train_loader, test_loader = get_cifar_loader(get_transform(train_profile), get_transform(normalize), batch_size=batch_size, use_cuda=use_cuda)
 
 
