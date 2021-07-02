@@ -84,6 +84,21 @@ ricap_profile = {
 }
 use_cuda, device = get_device()
 
-#train_loader, test_loader = get_cifar_loader(get_transform(train_profile), get_transform(normalize), batch_size=batch_size, use_cuda=use_cuda)
 
 
+train_loader, test_loader = get_cifar_loader(get_transform(train_profile), get_transform(normalize), batch_size=batch_size, use_cuda=use_cuda)
+
+optimizer = get_sgd_optimizer(model, lr=lr, momentum=momentum, weight_decay=weight_decay)
+criteria = get_crossentropy_criteria(device)
+
+schedule = np.interp(np.arange(epochs+1), [0, 7, epochs], [lr, max_lr, lr/20.0])
+
+# Create Custom One Cycle schedule instance
+custom_scheduler = one_cycle_lr_custom(
+    optimizer, 
+    lr=lr, 
+    max_lr=max_lr, 
+    steps_per_epoch=steps_per_epoch, 
+    epochs=epochs,
+    schedule=schedule
+)
