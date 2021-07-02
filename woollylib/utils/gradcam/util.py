@@ -49,33 +49,38 @@ def generate_heat_map(gradcam: GradCAM, prediction, data, channel_size: int = 12
     return heatmap
 
 
-def apply_heatmap_to_image(path: str, heatmap):
+def apply_heatmap_to_image(img, heatmap):
     # Read original image form path
-    img = cv.imread(path)
+    img = img.cpu().numpy().transpose(1, 2, 0)
 
     # Resize heat map to original image
     heatmap = cv.resize(heatmap.numpy(), (img.shape[1], img.shape[0]))
+    
     heatmap = np.uint8(255 * heatmap)
-    heatmap = cv.applyColorMap(heatmap, cv.COLORMAP_JET)
+    heatmap = cv.applyColorMap(heatmap, cv.COLORMAP_JET)/255.0
 
     # Superimpose heat map on original image
-    superimposed_img = heatmap * 0.4 + img
+    superimposed_img = heatmap * 0.8 + img
 
     # Normalize super imposed image
     return superimposed_img / superimposed_img.max()
 
 
-def plot_output(heatmap, image, label, class_map):
+def plot_output(image, heatmap, simage, label, pred, class_map):
     # Get classes names
     classes = list(class_map.keys())
 
     # Define figure
-    fig = plt.figure(figsize=(10, 4))
-
-    ax = fig.add_subplot(1, 2, 1, xticks=[], yticks=[])
-    ax.set_title(f'{classes[label.item()]}')
-    plt.imshow(image)
-
-    ax = fig.add_subplot(1, 2, 2, xticks=[], yticks=[])
-    ax.set_title(f'{classes[label.item()]}')
+    fig = plt.figure(figsize=(6, 4))
+    
+    ax = fig.add_subplot(1, 3, 1, xticks=[], yticks=[])
+    ax.set_title(f'{classes[label.item()]}/{classes[pred.item()]}')
+    plt.imshow(image.cpu().numpy().transpose(1, 2, 0))
+    
+    ax = fig.add_subplot(1, 3, 2, xticks=[], yticks=[])
+    ax.set_title(f'{classes[label.item()]}/{classes[pred.item()]}')
     plt.imshow(heatmap.squeeze())
+
+    ax = fig.add_subplot(1, 3, 3, xticks=[], yticks=[])
+    ax.set_title(f'{classes[label.item()]}/{classes[pred.item()]}')
+    plt.imshow(simage)

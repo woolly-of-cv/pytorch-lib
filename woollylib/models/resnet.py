@@ -49,10 +49,10 @@ class BasicBlock(nn.Module):
 
 
 class ResNet(nn.Module):
-    def __init__(self, block, num_blocks, ctype, norm, num_classes):
+    def __init__(self, block, num_blocks, ctype, norm, classes):
         super(ResNet, self).__init__()
         self.in_planes = 64
-        self.num_classes = num_classes
+        self.classes = classes
 
         # Feature Layer
         # self.first = self.first_block(norm, ctype)
@@ -75,13 +75,13 @@ class ResNet(nn.Module):
         # Classifier Layer
         # self.layer4 = self._make_layer(
         #     block, 512, num_blocks[3], norm=norm, ctype=ctype, stride=2)
-        # self.linear = nn.Linear(512*block.expansion, num_classes)
+        # self.linear = nn.Linear(512*block.expansion, classes)
 
         self.classifier = nn.Sequential(
             self._make_layer(
                 block, 512, num_blocks[3], norm=norm, ctype=ctype, stride=2),
             nn.AdaptiveAvgPool2d(1),
-            nn.Conv2d(512, num_classes, 1)
+            nn.Conv2d(512, classes, 1)
         )
 
     def _first_layer(self, norm, ctype):
@@ -119,21 +119,21 @@ class ResNet(nn.Module):
         out = self.classifier(out)
 
         # Reshape
-        out = out.view(-1, self.num_classes)
+        out = out.view(-1, self.classes)
 
         return out
 
 
-def ResNet18(ctype='vanila', norm='bn', num_classes=10):
-    return ResNet(BasicBlock, [2, 2, 2, 2], ctype=ctype, norm=norm, num_classes=num_classes)
+def ResNet18(ctype='vanila', norm='bn', classes=10):
+    return ResNet(BasicBlock, [2, 2, 2, 2], ctype=ctype, norm=norm, classes=classes)
 
 
-def ResNet34(ctype='vanila', norm='bn', num_classes=10):
-    return ResNet(BasicBlock, [3, 4, 6, 3], ctype=ctype, norm=norm, num_classes=num_classes)
+def ResNet34(ctype='vanila', norm='bn', classes=10):
+    return ResNet(BasicBlock, [3, 4, 6, 3], ctype=ctype, norm=norm, classes=classes)
 
 
 def test():
-    net = ResNet18(ctype='vanila', norm='bn', num_classes=10)
+    net = ResNet18(ctype='vanila', norm='bn', classes=10)
     y = net(torch.randn(1, 3, 32, 32))
     print(y.size())
 

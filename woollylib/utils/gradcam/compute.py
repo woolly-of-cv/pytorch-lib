@@ -1,42 +1,24 @@
 # Create dataset to load images
 
+import torch
 from torch.utils import data
 
-from woollylib.dataset import WyCustomDataset
-from woollylib.utils.transform import BASE_PROFILE, get_transform
 from woollylib.utils.gradcam.gradcam import GradCAM
 from woollylib.utils.gradcam.util import get_prediction_for_image, generate_heat_map, apply_heatmap_to_image, plot_output
 
 
-def compute_gradcam(model, class_map, path='./data', device='cpu'):
-    # use the CIFAR transformation
-    profile = {
-        'resize': BASE_PROFILE['resize'],
-        'normalize': BASE_PROFILE['normalize'],
-        'to_tensor': BASE_PROFILE['to_tensor']
-    }
-
-    transform = get_transform(profile)
-
-    # define a local image dataset
-    dataset = WyCustomDataset(class_map, path=path, transforms=transform)
-
-    # define the dataloader to load that single image
-    dataloader = data.DataLoader(dataset=dataset, shuffle=False, batch_size=1)
-
-    # initialize the VGG model
+def compute_gradcam(model, class_map, img, label, pred, device='cpu'):
+    # initialize the GradCAM model
     gradcam = GradCAM(model).to(device)
 
-    for img, label, (impath,) in dataloader:
-        # To device
-        img = img.to(device)
-        # Get Predictions
-        prediction = get_prediction_for_image(gradcam, img, device)
-        # Get Heatmap for this prediction
-        heatmap = generate_heat_map(gradcam, prediction, img, channel_size=128)
-        # Get Overlayed image
-        superimposed = apply_heatmap_to_image(impath, heatmap)
+    # To device
+    img = img.to(device)
+    # Get Predictions
+    prediction = get_prediction_for_image(gradcam, torch.reshape(img, (1, 3, 32, 32)), device)
+    # Get Heatmap for this prediction
+    heatmap = generate_heat_map(gradcam, prediction, torch.reshape(img, (1, 3, 32, 32)), channel_size=256)
+    # Get Overlayed image
+    superimposed = apply_heatmap_to_image(img, heatmap)
 
-        # Plot Images
-        plot_output(heatmap, superimposed, label, class_map)
-
+    # Plot Images
+    plot_output(img, heatmap, superimposed, label, pred, class_map)
