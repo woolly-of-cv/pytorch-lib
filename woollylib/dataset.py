@@ -11,7 +11,7 @@ from woollylib.utils.transform import convert_to_tensor
 torch.manual_seed(1)
 
 class WyCustomDataset(Dataset):
-    def __init__(self, class_map, path='./data/', transforms=None):
+    def __init__(self, class_map, path='./data', transforms=None):
         self.img_dim = (32, 32)
         self.transforms = transforms
         self.idata = []
@@ -255,12 +255,12 @@ def get_cifar_loader(train_transform, test_transform, batch_size=64, use_cuda=Tr
     kwargs = {'num_workers': 4, 'pin_memory': True} if use_cuda else {}
 
     train_loader = DataLoader(
-        WyDataset(datasets.CIFAR10('../data', train=True,
+        WyDataset(datasets.CIFAR10('./data', train=True,
                                    download=True), transforms=train_transform),
         batch_size=batch_size, shuffle=True, **kwargs)
 
     test_loader = DataLoader(
-        WyDataset(datasets.CIFAR10('../data', train=False,
+        WyDataset(datasets.CIFAR10('./data', train=False,
                                    download=True), transforms=test_transform),
         batch_size=batch_size, shuffle=True, **kwargs)
 
