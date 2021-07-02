@@ -35,12 +35,12 @@ class BasicBlock(nn.Module):
                 # nn.Conv2d(in_planes, self.expansion*planes,
                 #           kernel_size=1, stride=stride, bias=False),
                 WyConv2d(in_planes, self.expansion*planes, kernel_size=1,
-                         strides=stride, ctype='vanila'),
+                         strides=stride, padding=0, ctype='vanila'),
                 # nn.BatchNorm2d(self.expansion*planes)
                 get_norm_layer(self.expansion*planes, norm)
             )
 
-    def forward(self, x, dropout=True):
+    def forward(self, x):
         out = F.relu(self.bn1(self.conv1(x)))
         out = self.bn2(self.conv2(out))
         out += self.shortcut(x)
