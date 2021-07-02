@@ -52,6 +52,7 @@ class ResNet(nn.Module):
     def __init__(self, block, num_blocks, ctype, norm, num_classes):
         super(ResNet, self).__init__()
         self.in_planes = 64
+        self.num_classes = num_classes
 
         # Feature Layer
         # self.first = self.first_block(norm, ctype)
@@ -102,14 +103,24 @@ class ResNet(nn.Module):
         return nn.Sequential(*layers)
 
     def forward(self, x, **kwargs):
-        out = F.relu(self.bn1(self.conv1(x)))
-        out = self.layer1(out)
-        out = self.layer2(out)
-        out = self.layer3(out)
-        out = self.layer4(out)
-        out = F.avg_pool2d(out, 4)
-        out = out.view(out.size(0), -1)
-        out = self.linear(out)
+        # out = F.relu(self.bn1(self.conv1(x)))
+        # out = self.layer1(out)
+        # out = self.layer2(out)
+        # out = self.layer3(out)
+        # out = self.layer4(out)
+        # out = F.avg_pool2d(out, 4)
+        # out = out.view(out.size(0), -1)
+        # out = self.linear(out)
+
+        # Feature Layer
+        out = self.feature(x)
+
+        # Classifier Layer
+        out = self.classifier(out)
+
+        # Reshape
+        out = out.view(-1, self.num_classes)
+
         return out
 
 
