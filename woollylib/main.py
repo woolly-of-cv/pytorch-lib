@@ -83,5 +83,6 @@ ricap_profile = {
     'ricap_beta': ricap_beta
 }
 
-train_loader, test_loader = get_cifar_loader(get_transform(train_profile), get_transform(normalize), batch_size=batch_size, use_cuda=use_cuda)
-
+def train_test():
+    train_loader, test_loader = get_cifar_loader(get_transform(train_profile), get_transform(normalize), batch_size=batch_size, use_cuda=use_cuda)
+    return train_loader, test_loader
