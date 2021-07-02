@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import cv2 as cv
 
-from woollylib.gradcam.gradcam import GradCAM
+from woollylib.utils.gradcam.gradcam import GradCAM
 
 
 def get_prediction_for_image(gradcam: GradCAM, data, device: str):

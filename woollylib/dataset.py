@@ -4,14 +4,15 @@ from torchvision import datasets
 from torch.utils.data import Dataset, DataLoader
 import glob
 from PIL import Image
+import os
 
-from woollylib.transform import convert_to_tensor
+from woollylib.utils.transform import convert_to_tensor
 
 torch.manual_seed(1)
 
-
+path = os.path.join(os.path.expanduser('~'), 'data', 'cifar10')
 class WyCustomDataset(Dataset):
-    def __init__(self, class_map, path='./data', transforms=None):
+    def __init__(self, class_map, path=path, transforms=None):
         self.img_dim = (32, 32)
         self.transforms = transforms
         self.idata = []
