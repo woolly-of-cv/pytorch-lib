@@ -5,20 +5,18 @@ import os
 with open("requirements.txt") as f:
     required = f.read().splitlines()
 
-cf_remote_version = (
+woollylib_version = (
     subprocess.run(["git", "describe", "--tags"], stdout=subprocess.PIPE)
     .stdout.decode("utf-8")
     .strip()
 )
-assert "." in cf_remote_version
-
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name="woolylib",
-    version=cf_remote_version,
+    version=woolylib_version,
     author="Team_woolly",
     author_email="srikanthakandarp23@gmail.com",
     description="This Library for pytorch based utilities which will be used for training and visualizing cv models",
