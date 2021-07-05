@@ -18,7 +18,7 @@ setuptools.setup(
     name="woollylib",
     version=woollylib_version,
     author="Team Woolly",
-    author_email="srikanthakandarp23@gmail.com",
+    author_email="teamwoolly.in@gmail.com",
     description="This Library for pytorch based utilities which will be used for training and visualizing cv models",
     long_description=long_description,
     long_description_content_type="text/markdown",
