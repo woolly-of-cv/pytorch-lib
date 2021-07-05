@@ -1,6 +1,6 @@
 # woollylib 
 
-This is a pytorch based utilities library which will help you for training and visualizing computer vision models
+This is a pytorch based utilities library which will help you for training and visualizing computer vision models.
 
 * ## Structure Tree
 
