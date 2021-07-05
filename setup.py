@@ -15,7 +15,6 @@ setup(
     name="woollylib",
     version="0.1.0",
     description="This Library for pytorch based utilities which will be used for training and visualizing cv models",
-    long_description=open("README.txt").read() + "\n\n" + open("CHANGELOG.txt").read(),
     url="",
     author="Team_woolly",
     author_email="srikanthakandarp23@gmail.com",
