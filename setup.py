@@ -16,7 +16,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="woolylib",
-    version=woolylib_version,
+    version=woollylib_version,
     author="Team_woolly",
     author_email="srikanthakandarp23@gmail.com",
     description="This Library for pytorch based utilities which will be used for training and visualizing cv models",
