@@ -15,9 +15,9 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="woolylib",
+    name="woollylib",
     version=woollylib_version,
-    author="Team_woolly",
+    author="Team Woolly",
     author_email="srikanthakandarp23@gmail.com",
     description="This Library for pytorch based utilities which will be used for training and visualizing cv models",
     long_description=long_description,
