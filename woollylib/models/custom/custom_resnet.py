@@ -55,7 +55,7 @@ class CustomResNet(nn.Module):
 
         self.feature = nn.Sequential(
             self._pre_layer(norm, ctype='vanila'),
-            self._make_layer(1, norm=norm, ctype=ctype, stride=1),
+            self._res_layer(1, norm=norm, ctype=ctype, stride=1),
             self._transition_layer(norm=norm, ctype=ctype),
         )
 
@@ -66,8 +66,8 @@ class CustomResNet(nn.Module):
         # )
 
         self.classifier = nn.Sequential(
-            self._make_layer(1, norm=norm, ctype=ctype, stride=1),
-            nn.AdaptiveAvgPool2d(1),  # nn.MaxPool2d(4),
+            self._res_layer(1, norm=norm, ctype=ctype, stride=1),
+            nn.MaxPool2d(4), # nn.AdaptiveAvgPool2d(1),
             View(self.in_planes),
             nn.Linear(self.in_planes, self.classes)
         )
@@ -98,7 +98,7 @@ class CustomResNet(nn.Module):
         self.in_planes = out_planes
         return layer
 
-    def _make_layer(self, num_blocks, norm, ctype, stride):
+    def _res_layer(self, num_blocks, norm, ctype, stride):
         strides = [stride] + [1]*(num_blocks-1)
         layers = []
         out_planes = self.in_planes * self.block.expansion

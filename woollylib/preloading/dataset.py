@@ -207,9 +207,9 @@ def train_test_load(batch_size, use_cuda, ricap_beta):
     dataset = cifar10()  # downloads dataset
     dataset = map_nested(to(device), dataset)
     train_set = preprocess(dataset['train'], [partial(
-        pad, border=4), transpose, normalise, to(torch.float32)])
+        pad, border=4), transpose, normalise, to(torch.float16)])
     valid_set = preprocess(
-        dataset['valid'], [transpose, normalise, to(torch.float32)])
+        dataset['valid'], [transpose, normalise, to(torch.float16)])
 
     train_batches = partial(Batches, dataset=train_set,
                             shuffle=True,  drop_last=False, max_options=200)

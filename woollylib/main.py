@@ -6,23 +6,14 @@ import torch
 import json
 import numpy as np
 
-from woollylib.utils.utils import get_device
 from woollylib.dataset import get_cifar_loader, get_advance_cifar_loader # Load test and train loaders
 from woollylib.utils.transform import BASE_PROFILE, get_transform # Get transforme functions
-from woollylib.utils.visualize import print_class_scale, print_samples, print_samples_native
-from woollylib.models import resnet
-from woollylib.backpropagation import train, train_ricap, train_native, test, test_native, get_sgd_optimizer, get_crossentropy_criteria, get_label_smoothing_criteria
-from woollylib.utils.utils import initialize_weights, print_modal_summary, print_summary
-from woollylib.scheduler import one_cycle_lr_pt, one_cycle_lr_custom
-from woollylib.training import Training
+from woollylib.utils.visualize import print_samples
+from woollylib.bp.optimizer.backpropagation import get_sgd_optimizer
+from woollylib.bp.losses.backpropagation import  get_crossentropy_criteria, get_label_smoothing_criteria
+from woollylib.scheduler import one_cycle_lr_custom
+
 from woollylib.utils.gradcam.compute import compute_gradcam
-
-from woollylib.utils.visualize import plot_network_performance
-from woollylib.utils.utils import get_incorrrect_predictions
-from woollylib.utils.visualize import plot_incorrect_predictions
-
-from woollylib.utils.utils import get_all_predictions, get_incorrrect_predictions, prepare_confusion_matrix
-from woollylib.utils.visualize import plot_confusion_matrix
 
 torch.manual_seed(1)
 global train_profile
@@ -75,8 +66,8 @@ def get_optimizer(model,lr, momentum, weight_decay, device):
     return optimizer, criteria
 
 def get_scheduler(epochs, lr, max_lr, mom, mom_max, optimizer, steps_per_epoch):
-    schedule = np.interp(np.arange(epochs+1), [0, 4, epochs], [lr, max_lr, 0])
-    mschedule = np.interp(np.arange(epochs+1), [0, 4, epochs], [mom_max, mom, mom_max])
+    schedule = np.interp(np.arange(epochs+1), [0, 5, epochs], [lr, max_lr, lr/5.0])
+    mschedule = np.interp(np.arange(epochs+1), [0, 5, epochs], [mom_max, mom, mom_max])
     # Create Custom One Cycle schedule instance
     custom_scheduler = one_cycle_lr_custom(
         optimizer, 
@@ -89,18 +80,6 @@ def get_scheduler(epochs, lr, max_lr, mom, mom_max, optimizer, steps_per_epoch):
     )
     return custom_scheduler
 
-def get_samples_visualize(show_dataset_analyze, train_loader):
-    class_map = {
-        'PLANE': 0,
-        'CAR': 1,
-        'BIRD': 2,
-        'CAT': 3,
-        'DEER': 4,
-        'DOG': 5,
-        'FROG': 6,
-        'HORSE': 7,
-        'SHIP': 8,
-        'TRUCK': 9
-    }
+def get_samples_visualize(show_dataset_analyze, train_loader, class_map):
     if show_dataset_analyze:
         print_samples(train_loader, class_map)

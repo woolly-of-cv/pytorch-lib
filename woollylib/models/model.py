@@ -7,6 +7,18 @@ torch.manual_seed(1)
 GROUP_SIZE = 2
 
 
+class GBN(nn.Module):
+    def __init__(self, inp, vbs=16, momentum=0.01):
+        super().__init__()
+        self.bn = nn.BatchNorm1d(inp, momentum=momentum)
+        self.vbs = vbs
+
+    def forward(self, x):
+        chunk = torch.chunk(x, x.size(0)//self.vbs, 0)
+        res = [self.bn(y) for y in chunk]
+        return torch.cat(res, 0)
+
+
 def get_norm_layer(output_size, norm='bn'):
     """This function provides normalization layer based on params
 
@@ -22,6 +34,8 @@ def get_norm_layer(output_size, norm='bn'):
         n = nn.GroupNorm(GROUP_SIZE, output_size)
     elif norm == 'ln':
         n = nn.GroupNorm(1, output_size)
+    elif norm == 'gon':
+        n = GBN(output_size)
 
     return n
 
