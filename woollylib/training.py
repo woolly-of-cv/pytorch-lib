@@ -19,7 +19,8 @@ class Training():
                  lr,
                  epochs,
                  device,
-                 dropout
+                 dropout,
+                 scaler
                  ):
         """Initialize Trainer
 
@@ -46,6 +47,7 @@ class Training():
         self.lr = lr
         self.device = device
         self.dropout = dropout
+        self.scaler = scaler
         self.train_loader = train_loader
         self.test_loader = test_loader
 
@@ -111,7 +113,7 @@ class Training():
             self.start_time = time.time()
 
             train_loss, train_correct = self.train(
-                self.model, self.train_loader, self.optimizer, self.criteria, self.dropout, self.device, self.scheduler)
+                self.model, self.train_loader, self.optimizer, self.criteria, self.dropout, self.device, self.scaler, self.scheduler)
             valid_loss, valid_correct = self.test(
                 self.model, self.test_loader, self.criteria, self.device)
 
