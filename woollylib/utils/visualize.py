@@ -21,7 +21,7 @@ def print_samples(loader, class_map, count=16):
         for i in range(count):
             ax = fig.add_subplot(int(count/8), 8, i + 1, xticks=[], yticks=[])
             ax.set_title(f'{classes[labels[i]]}')
-            plt.imshow(imgs[i].numpy().transpose(1, 2, 0))
+            plt.imshow(imgs[i].cpu().numpy().transpose(1, 2, 0).astype(np.float))
         break
 
 def print_samples_native(loader, class_map, count=16):

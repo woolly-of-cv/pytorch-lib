@@ -10,7 +10,7 @@ class CustomOneCycleLR():
 
     """
 
-    def __init__(self, optimizer, schedule, steps_per_epoch):
+    def __init__(self, optimizer, lrschedule, mschedule, steps_per_epoch):
         """Initialize Scheduler
 
         Args:
@@ -19,19 +19,21 @@ class CustomOneCycleLR():
             steps_per_epoch (int): Number of steps before changing lr value
         """
         self.optimizer = optimizer
-        self.schedule = schedule
+        self.lrschedule = lrschedule
+        self.mschedule = mschedule
         self.epoch = 0
         self.steps = 0
         self.steps_per_epoch = steps_per_epoch
-        self.optimizer.param_groups[0]['lr'] = self.schedule[self.epoch]
+        self.optimizer.param_groups[0]['lr'] = self.lrschedule[self.epoch]
+        self.optimizer.param_groups[0]['momentum'] = self.mschedule[self.epoch]
 
     def step(self):
         """Called every step to set next lr value
         """
-        self.optimizer.param_groups[0]['lr'] = self.lr_schedules()
+        self.optimizer.param_groups[0]['lr'], self.optimizer.param_groups[0]['momentum'] = self.get_params()
 
-    def lr_schedules(self):
-        """Get Next value for lr
+    def get_params(self):
+        """Get Next value for lr, momentum
 
         Returns:
             float: LR value to use for next step
@@ -40,7 +42,7 @@ class CustomOneCycleLR():
         if self.steps % self.steps_per_epoch == 0:
             self.steps = 1
             self.epoch += 1
-        return self.schedule[self.epoch]
+        return self.lrschedule[self.epoch], self.mschedule[self.epoch]
 
 
 def one_cycle_lr_pt(optimizer, lr, max_lr, steps_per_epoch, epochs, anneal_strategy='linear'):
@@ -66,7 +68,7 @@ def one_cycle_lr_pt(optimizer, lr, max_lr, steps_per_epoch, epochs, anneal_strat
     )
 
 
-def one_cycle_lr_custom(optimizer, lr, max_lr, steps_per_epoch, epochs, schedule, anneal_strategy='linear'):
+def one_cycle_lr_custom(optimizer, lr, max_lr, steps_per_epoch, epochs, lrschedule, mschedule, anneal_strategy='linear'):
     """Create instance of one cycle lr scheduler from python
 
     Args:
@@ -85,4 +87,4 @@ def one_cycle_lr_custom(optimizer, lr, max_lr, steps_per_epoch, epochs, schedule
     """
     if epochs < 12:
         raise Exception("Epoch value can not be less than 12")
-    return CustomOneCycleLR(optimizer, schedule, steps_per_epoch)
+    return CustomOneCycleLR(optimizer, lrschedule, mschedule, steps_per_epoch)

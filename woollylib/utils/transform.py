@@ -89,6 +89,15 @@ def get_transform(profile):
                 p=rs['p']
             )
         )
+        
+    if 'normalize' in profile:
+        norm = profile['normalize']
+        trs.append(
+            A.Normalize(
+                mean=norm['mean'],
+                std=norm['std'],
+            )
+        )
 
     if 'pad_and_crop' in profile:
         pac = profile['pad_and_crop']
@@ -105,15 +114,6 @@ def get_transform(profile):
                     width=pac['width']
                 )
             ], p=pac['p'])
-        )
-
-    if 'normalize' in profile:
-        norm = profile['normalize']
-        trs.append(
-            A.Normalize(
-                mean=norm['mean'],
-                std=norm['std'],
-            )
         )
 
     if 'shift_scale_rotate' in profile:
