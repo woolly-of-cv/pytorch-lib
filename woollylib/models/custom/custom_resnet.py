@@ -29,6 +29,7 @@ class WyBlock(nn.Module):
         x = F.relu(self.pbn1(self.pmp1(self.pconv1(x))))
         r = F.relu(self.rbn1(self.rconv1(x)))
         r = F.relu(self.rbn2(self.rconv2(r)))
+        r = r + x
         return r + x
 
 
@@ -67,7 +68,7 @@ class CustomResNet(nn.Module):
 
         self.classifier = nn.Sequential(
             self._res_layer(1, norm=norm, ctype=ctype, stride=1),
-            nn.MaxPool2d(4), # nn.AdaptiveAvgPool2d(1),
+            nn.MaxPool2d(4),  # nn.AdaptiveAvgPool2d(1),
             View(self.in_planes),
             nn.Linear(self.in_planes, self.classes)
         )

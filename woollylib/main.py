@@ -22,6 +22,7 @@ def train_test_load(batch_size, use_cuda, ricap_beta):
     train_profile = {
         'normalize': BASE_PROFILE['normalize'],
         'shift_scale_rotate': BASE_PROFILE['shift_scale_rotate'],
+#         'rotate': BASE_PROFILE['rotate'],
         'pad_and_crop': BASE_PROFILE['pad_and_crop'],
 #         'crop_and_pad': BASE_PROFILE['crop_and_pad'],
 #         'random_brightness_contrast': BASE_PROFILE['random_brightness_contrast'],
@@ -31,10 +32,14 @@ def train_test_load(batch_size, use_cuda, ricap_beta):
         'to_tensor':  BASE_PROFILE['to_tensor'],
     }
 
-    train_profile['shift_scale_rotate']['rotate_limit'] = 7
+    train_profile['shift_scale_rotate']['rotate_limit'] = 5
+    train_profile['shift_scale_rotate']['p'] = 0.5
     
     train_profile['pad_and_crop']['pad'] = 4
     train_profile['pad_and_crop']['p'] = 1.0
+    
+#     train_profile['rotate']['limit'] = 5
+#     train_profile['rotate']['p'] = 1.0
 
     train_profile['coarse_dropout']['min_height'] = 8
     train_profile['coarse_dropout']['min_width'] = 8
@@ -66,8 +71,8 @@ def get_optimizer(model,lr, momentum, weight_decay, device):
     return optimizer, criteria
 
 def get_scheduler(epochs, lr, max_lr, mom, mom_max, optimizer, steps_per_epoch):
-    schedule = np.interp(np.arange(epochs+1), [0, 5, epochs], [lr, max_lr, lr/5.0])
-    mschedule = np.interp(np.arange(epochs+1), [0, 5, epochs], [mom_max, mom, mom_max])
+    schedule = np.interp(np.arange(epochs+1), [0, 4, epochs], [lr, max_lr, lr/20.0])
+    mschedule = np.interp(np.arange(epochs+1), [0, 4, epochs], [mom_max, mom, mom_max])
     # Create Custom One Cycle schedule instance
     custom_scheduler = one_cycle_lr_custom(
         optimizer, 

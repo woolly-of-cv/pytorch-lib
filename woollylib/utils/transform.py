@@ -21,6 +21,10 @@ BASE_PROFILE = {
         'fill': (0.4914, 0.4822, 0.4465),
         'p': 1
     },
+    'rotate': {
+        'limit': 5,
+        'p': 1.0
+    },
     'normalize': {
         'mean': (0.4914, 0.4822, 0.4465),
         'std': (0.2470, 0.2435, 0.2616)
@@ -114,6 +118,15 @@ def get_transform(profile):
                     width=pac['width']
                 )
             ], p=pac['p'])
+        )
+        
+    if 'rotate' in profile:
+        ro = profile['rotate']
+        trs.append(
+            A.Rotate(
+                limit=ro['limit'],
+                p=ro['p']
+            )
         )
 
     if 'shift_scale_rotate' in profile:
