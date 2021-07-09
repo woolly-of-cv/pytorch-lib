@@ -6,9 +6,27 @@ This is a pytorch based utilities library which will help you for training and v
 
 ```
 ├── woollylib
+│   ├── bp
+│   │   ├── autocast
+│   │   │     └── backpropagation.py   
+│   │   ├── losses
+│   │   │     └── backpropagation.py  
+│   │   ├── optimizer
+│   │   │     └── backpropagation.py  
+│   │   ├── ricap
+│   │   │     └── backpropagation.py   
+│   │   └── vanila  
+│   │         └── backpropagation.py   
+│   │ 
 │   ├── models
-│   │     ├── model.py
-│   │     └──  resnet.py
+│   │   ├── custom
+│   │   │     └── custom_resnet.py 
+│   │   ├── model.py
+│   │   └── resnet.py
+│   │ 
+│   ├── preloading
+│   │    └── dataset.py 
+│   │ 
 │   ├── utils
 │   │    ├── gradcam
 │   │    │   ├── _init_.py
@@ -21,7 +39,6 @@ This is a pytorch based utilities library which will help you for training and v
 │   │    └── visualize.py 
 │   │ 
 │   ├── _init_.py
-│   ├── backpropagation.py
 │   ├── dataset.py
 │   ├── main.py
 │   ├── scheduler.py
@@ -29,7 +46,6 @@ This is a pytorch based utilities library which will help you for training and v
 │   
 ├── setup.py
 ├── LICENSE
-├── CHANGELOG.txt
 ├── MANIFEST.IN
 ├── README.txt
 ├── requirements.txt
