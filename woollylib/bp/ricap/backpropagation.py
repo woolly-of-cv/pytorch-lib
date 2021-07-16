@@ -1,5 +1,6 @@
 import torch
 import numpy as np
+from torch.cuda.amp import autocast
 
 torch.manual_seed(1)
 
@@ -179,15 +180,19 @@ def train_ricap(use_l1=False, lambda_l1=5e-4, ricap_beta=0.3):
             data, target = data.to(device), target.to(device)
 
             optimizer.zero_grad()
-            loss, batch_correct = ricap(data, target)
+            with autocast():
+                loss, batch_correct = ricap(data, target)
 
             if use_l1 == True:
                 l1 = 0
                 for p in model.parameters():
                     l1 = l1 + p.square().sum()
                 loss = loss + lambda_l1 * l1
-            loss.backward()
-            optimizer.step()
+            # loss.backward()
+            # optimizer.step()
+            scaler.scale(loss).backward()
+            scaler.step(optimizer)
+            scaler.update()
             if scheduler:
                 scheduler.step()
 

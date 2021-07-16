@@ -61,9 +61,11 @@ class LabelSmoothCrossEntropyLoss(_WeightedLoss):
 
         loss = -(targets * lsm).sum(-1)
 
-        if self.reduction == 'sum':
+        loss_reduction = reduction if reduction else self.reduction
+
+        if loss_reduction == 'sum':
             loss = loss.sum()
-        elif self.reduction == 'mean':
+        elif loss_reduction == 'mean':
             loss = loss.mean()
 
         return loss

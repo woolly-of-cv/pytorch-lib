@@ -6,13 +6,13 @@ from woollylib.models.common import View
 
 torch.manual_seed(1)
 
-GROUP_SIZE = 2
+GROUP_SIZE = 16
 
 
-class GBN(nn.Module):
+class GhostBatchNorm2d(nn.Module):
     def __init__(self, inp, vbs=16, momentum=0.01):
         super().__init__()
-        self.bn = nn.BatchNorm1d(inp, momentum=momentum)
+        self.bn = nn.BatchNorm2d(vbs, momentum=momentum)
         self.vbs = vbs
 
     def forward(self, x):
@@ -37,7 +37,7 @@ def get_norm_layer(output_size, norm='bn'):
     elif norm == 'ln':
         n = nn.GroupNorm(1, output_size)
     elif norm == 'gbn':
-        n = GBN(output_size)
+        n = GhostBatchNorm2d(output_size)
 
     return n
 
@@ -96,6 +96,77 @@ class WyConv2d(nn.Module):
         return x
 
 
+class WyBottleneck(nn.Module):
+    expansion = 4
+
+    def __init__(
+            self,
+            input_size,
+            output_size,
+            padding=1,
+            strides=1,
+            dilation=1,
+            use1x1=False,
+            ctype='vanila',
+            norm='bn',
+            first_block=False,
+            usedilation=False,
+            use_skip=True):
+
+        super(WyBottleneck, self).__init__()
+        planes = output_size/self.expansion
+        self.conv1 = WyConv2d(
+            input_size,
+            planes,
+            kernel_size=1,
+            padding=0,
+            strides=strides
+        )
+        self.bn1 = get_norm_layer(planes, norm=norm)
+
+        self.conv2 = WyConv2d(
+            planes,
+            planes,
+            kernel_size=3,
+            padding=padding,
+            strides=strides,
+            dilation=dilation,
+            ctype=ctype
+        )
+        self.bn2 = get_norm_layer(planes, norm=norm)
+
+        self.conv3 = WyConv2d(
+            planes,
+            output_size,
+            kernel_size=1,
+            padding=0,
+            strides=strides
+        )
+
+        self.bn3 = get_norm_layer(output_size, norm=norm)
+
+        self.shortcut = nn.Sequential()
+        if use1x1 and use_skip and strides != 1 and input_size != output_size:
+            self.shortcut = nn.Sequential(
+                WyConv2d(
+                    input_size,
+                    output_size,
+                    kernel_size=1,
+                    padding=0,
+                    strides=strides
+                ),
+                get_norm_layer(output_size, norm=norm)
+            )
+
+    def forward(self, x):
+        out = F.relu(self.bn1(self.conv1(x)))
+        out = F.relu(self.bn2(self.conv2(out)))
+        out = self.bn3(self.conv3(out))
+        out += self.shortcut(x)
+        out = F.relu(out)
+        return out
+
+
 class WyResidual(nn.Module):
     def __init__(self, input_size, output_size, padding=1, strides=1, dilation=1, use1x1=False, ctype='vanila', norm='bn', first_block=False, usedilation=False, use_skip=True):
         super(WyResidual, self).__init__()
@@ -137,12 +208,15 @@ class WyResidual(nn.Module):
         self.use_skip = use_skip
 
         if use1x1 and use_skip and strides != 1 and input_size != output_size:
-            self.pointwise = WyConv2d(
-                input_size,
-                output_size,
-                kernel_size=1,
-                padding=0,
-                strides=strides
+            self.pointwise = nn.Sequential(
+                WyConv2d(
+                    input_size,
+                    output_size,
+                    kernel_size=1,
+                    padding=0,
+                    strides=strides
+                ),
+                get_norm_layer(output_size, norm=norm)
             )
 
     def forward(self, x):
@@ -158,7 +232,7 @@ class WyResidual(nn.Module):
 
 
 class WyBlock(nn.Module):
-    def __init__(self, input_size, output_size, repetations=2, ctype='vanila', norm='bn', padding=1, strides=2, dilation=1, use1x1=False, usepool=False, usedilation=False, use_skip=True):
+    def __init__(self, input_size, output_size, repetations=2, ctype='vanila', norm='bn', padding=1, strides=2, dilation=1, use1x1=False, usepool=False, usedilation=False, use_skip=True, block=WyResidual):
         """Initialize Block
 
         Args:
@@ -174,13 +248,13 @@ class WyBlock(nn.Module):
         for r in range(repetations):
             if r == 0:
                 if usedilation:
-                    self.wyresudals.append(WyResidual(
+                    self.wyresudals.append(block(
                         input_size, output_size, padding=0, strides=strides, dilation=dilation, use1x1=use1x1, ctype=ctype, norm=norm, usedilation=usedilation, use_skip=use_skip))
                 else:
-                    self.wyresudals.append(WyResidual(
+                    self.wyresudals.append(block(
                         input_size, output_size, padding=padding, strides=strides, dilation=dilation, use1x1=use1x1, ctype=ctype, norm=norm, usedilation=usedilation, use_skip=use_skip))
             else:
-                self.wyresudals.append(WyResidual(
+                self.wyresudals.append(block(
                     output_size, output_size, padding=padding, use1x1=use1x1, ctype=ctype, norm=norm, usedilation=usedilation, use_skip=use_skip))
 
         self.conv = nn.Sequential(*self.wyresudals)
@@ -198,15 +272,15 @@ class WyBlock(nn.Module):
         Returns:
             tensor: Return processed tensor
         """
-        x = self.conv(x)
-
         if self.usepool:
             x = self.pool(x)
+
+        x = self.conv(x)
 
         return x
 
 
-class WyCifar10Net(nn.Module):
+class WyTiny(nn.Module):
     """ Network Class
 
     Args:
@@ -238,14 +312,19 @@ class WyCifar10Net(nn.Module):
 
         self.blocks = []
 
-        super(WyCifar10Net, self).__init__()
+        super(WyTiny, self).__init__()
 
         # Base Block
         self.blocks.append(WyResidual(
             input_size, self.base_channels*2, first_block=True))
 
-        for _ in range(self.blocks_count):
-            self.blocks.append(self._make_block(usedilation))
+#         self.blocks.append(self._pre_layer(input_size))
+
+        for i, s in [(2, 1), (2, 1), (2, 1)]:  # range(self.blocks_count):
+            self.base_channels = self.base_channels*2
+            inc, outc = self.base_channels, self.base_channels*2
+            self.blocks.append(self._bottle_neck(inc, outc))
+            self.blocks.append(self._make_block(usedilation, i, s))
 
         # Combine Feature Layer
         self.feature = nn.Sequential(*self.blocks)
@@ -260,20 +339,42 @@ class WyCifar10Net(nn.Module):
             # nn.Conv2d(self.base_channels*2, self.classes, 1)
         )
 
-    def _make_block(self, usedilation):
+#     def _pre_layer(self, input_size):
+#         return nn.Sequential(
+#             nn.ZeroPad2d(3),
+#             nn.Conv2d(input_size, self.base_channels*2, 7, 2, bias=False),
+#             nn.BatchNorm2d(self.base_channels*2),
+#             nn.ReLU(),
+# #             nn.MaxPool2d(3, 2)
+#         )
+
+    def _bottle_neck(self, inp, output):
+        return nn.Sequential(
+            WyConv2d(inp, output),
+            nn.MaxPool2d(2),
+            get_norm_layer(output, norm=self.norm),
+            nn.ReLU()
+        )
+
+    def _make_block(self, usedilation, repetations, strides):
         if usedilation:
             self.dilation = (
                 max(int(self.height/4), 1),
                 max(int(self.width/4), 1)
             )
-        self.base_channels = self.base_channels*2
+        if strides != 1:
+            self.base_channels = self.base_channels*2
+            inc, outc = self.base_channels, self.base_channels*2
+        else:
+            inc, outc = self.base_channels*2, self.base_channels*2
         block = WyBlock(
-            self.base_channels,
-            self.base_channels*2,
-            repetations=self.layers,
+            inc,
+            outc,
+            repetations=repetations,
             ctype=self.ctype,
             norm=self.norm,
             padding=1,
+            strides=strides,
             dilation=self.dilation,
             use1x1=self.use1x1,
             usepool=False,
@@ -302,7 +403,7 @@ class WyCifar10Net(nn.Module):
         x = self.classifier(x)
 
         # Reshape
-        x = x.view(-1, self.classes)
+#         x = x.view(-1, self.classes)
 
         # Output Layer
         return F.log_softmax(x, dim=1) if use_softmax else x
