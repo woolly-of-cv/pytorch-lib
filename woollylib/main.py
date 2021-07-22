@@ -6,7 +6,7 @@ import torch
 import json
 import numpy as np
 
-from woollylib.dataset import get_cifar_loader, get_advance_cifar_loader # Load test and train loaders
+from woollylib.dataset.cifar.dataset import get_cifar_loader, get_advance_cifar_loader # Load test and train loaders
 from woollylib.utils.transform import BASE_PROFILE, get_transform # Get transforme functions
 from woollylib.utils.visualize import print_samples
 from woollylib.bp.optimizer.backpropagation import get_sgd_optimizer
@@ -16,7 +16,6 @@ from woollylib.scheduler import one_cycle_lr_custom
 from woollylib.utils.gradcam.compute import compute_gradcam
 
 torch.manual_seed(1)
-global train_profile
 
 def train_test_load(batch_size, use_cuda, ricap_beta):
     train_profile = {
@@ -71,8 +70,8 @@ def get_optimizer(model,lr, momentum, weight_decay, device):
     return optimizer, criteria
 
 def get_scheduler(epochs, lr, max_lr, mom, mom_max, optimizer, steps_per_epoch):
-    schedule = np.interp(np.arange(epochs+1), [0, 4, epochs], [lr, max_lr, lr/20.0])
-    mschedule = np.interp(np.arange(epochs+1), [0, 4, epochs], [mom_max, mom, mom_max])
+    schedule = np.interp(np.arange(epochs+1), [0, 7, epochs], [lr, max_lr, lr/40.0])
+    mschedule = np.interp(np.arange(epochs+1), [0, 7, epochs], [mom_max, mom, mom_max])
     # Create Custom One Cycle schedule instance
     custom_scheduler = one_cycle_lr_custom(
         optimizer, 

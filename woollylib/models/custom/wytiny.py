@@ -114,13 +114,13 @@ class WyBottleneck(nn.Module):
             use_skip=True):
 
         super(WyBottleneck, self).__init__()
-        planes = output_size/self.expansion
+        planes = int(output_size/self.expansion)
         self.conv1 = WyConv2d(
             input_size,
             planes,
             kernel_size=1,
             padding=0,
-            strides=strides
+            strides=1
         )
         self.bn1 = get_norm_layer(planes, norm=norm)
 
@@ -140,7 +140,7 @@ class WyBottleneck(nn.Module):
             output_size,
             kernel_size=1,
             padding=0,
-            strides=strides
+            strides=1
         )
 
         self.bn3 = get_norm_layer(output_size, norm=norm)
@@ -168,6 +168,8 @@ class WyBottleneck(nn.Module):
 
 
 class WyResidual(nn.Module):
+    expansion = 2
+
     def __init__(self, input_size, output_size, padding=1, strides=1, dilation=1, use1x1=False, ctype='vanila', norm='bn', first_block=False, usedilation=False, use_skip=True):
         super(WyResidual, self).__init__()
 
@@ -309,6 +311,7 @@ class WyTiny(nn.Module):
         self.height, self.width = image
         self.dilation = 1
         self.blocks_count = blocks_count
+        self.resblock = WyResidual
 
         self.blocks = []
 
@@ -320,11 +323,14 @@ class WyTiny(nn.Module):
 
 #         self.blocks.append(self._pre_layer(input_size))
 
+        self.base_channels = self.base_channels*self.resblock.expansion
+
         for i, s in [(2, 1), (2, 1), (2, 1)]:  # range(self.blocks_count):
-            self.base_channels = self.base_channels*2
-            inc, outc = self.base_channels, self.base_channels*2
+            inc, outc = self.base_channels, self.base_channels*self.resblock.expansion
             self.blocks.append(self._bottle_neck(inc, outc))
-            self.blocks.append(self._make_block(usedilation, i, s))
+            self.blocks.append(self._make_block(
+                usedilation, i, s, resblock=self.resblock))
+            self.base_channels = self.base_channels*self.resblock.expansion
 
         # Combine Feature Layer
         self.feature = nn.Sequential(*self.blocks)
@@ -333,10 +339,11 @@ class WyTiny(nn.Module):
         # self.gap = nn.AdaptiveAvgPool2d(1)
         # self.flat = nn.Conv2d(self.base_channels*2, self.classes, 1)
         self.classifier = nn.Sequential(
+            #             nn.Conv2d(self.base_channels, self.classes, 1),
             nn.AdaptiveAvgPool2d(1),
-            View(self.base_channels*2),
-            nn.Linear(self.base_channels*2, self.classes)
-            # nn.Conv2d(self.base_channels*2, self.classes, 1)
+            #             View(self.classes),
+            View(self.base_channels),
+            nn.Linear(self.base_channels, self.classes)
         )
 
 #     def _pre_layer(self, input_size):
@@ -356,17 +363,17 @@ class WyTiny(nn.Module):
             nn.ReLU()
         )
 
-    def _make_block(self, usedilation, repetations, strides):
+    def _make_block(self, usedilation, repetations, strides, resblock):
         if usedilation:
             self.dilation = (
                 max(int(self.height/4), 1),
                 max(int(self.width/4), 1)
             )
         if strides != 1:
-            self.base_channels = self.base_channels*2
-            inc, outc = self.base_channels, self.base_channels*2
+            inc, outc = self.base_channels, self.base_channels*resblock.expansion
         else:
-            inc, outc = self.base_channels*2, self.base_channels*2
+            inc, outc = self.base_channels * \
+                resblock.expansion, self.base_channels*resblock.expansion
         block = WyBlock(
             inc,
             outc,
@@ -379,7 +386,8 @@ class WyTiny(nn.Module):
             use1x1=self.use1x1,
             usepool=False,
             usedilation=usedilation,
-            use_skip=self.use_skip
+            use_skip=self.use_skip,
+            block=resblock
         )
         self.height, self.width = self.height/2, self.width/2
 

@@ -49,7 +49,7 @@ def generate_heat_map(gradcam: GradCAM, prediction, data, channel_size: int = 12
     return heatmap
 
 
-def apply_heatmap_to_image(img, heatmap):
+def apply_heatmap_to_image(img, heatmap, colormap=cv.COLORMAP_VIRIDIS):
     # Read original image form path
     img = img.cpu().numpy().transpose(1, 2, 0)
 
@@ -57,7 +57,7 @@ def apply_heatmap_to_image(img, heatmap):
     heatmap = cv.resize(heatmap.numpy(), (img.shape[1], img.shape[0]))
     
     heatmap = np.uint8(255 * heatmap)
-    heatmap = cv.applyColorMap(heatmap, cv.COLORMAP_JET)/255.0
+    heatmap = cv.applyColorMap(heatmap, cv.COLORMAP_VIRIDIS)/255.0
 
     # Superimpose heat map on original image
     superimposed_img = heatmap * 0.8 + img

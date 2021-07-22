@@ -61,6 +61,17 @@ BASE_PROFILE = {
     'to_gray': {
         'p': 0.3
     },
+    'affine': {
+        'scale': (0.8, 0.9), 
+        'translate_percent': None, 
+        'translate_px': (6, 6), 
+        'rotate': 7, 
+        'shear': (10, 10), 
+        'interpolation': 1, 
+        'cval': 0, 
+        'mode': 0, 
+        'p': 0.5
+    },
     'coarse_dropout': {
         'max_holes': 1,
         'max_height': 16,
