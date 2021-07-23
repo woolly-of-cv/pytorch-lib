@@ -1,6 +1,6 @@
 ## YoloV3-Annotation
 
-The goal is to create text files in darknet yolo format that will be fed to training to the CNN. Below is explained pretty much how to use the functionalities.
+The goal is to create text files in darknet yolo format that will be fed for training. Below is an explaination on how to use this tool.
 
 **Disclaimer:** Credits to ManivannanMurugavel, you can find his repo here [Yolo-Annotation-Tool-New](https://github.com/ManivannanMurugavel/Yolo-Annotation-Tool-New-). Current code here is somewhat a correction of his repo.
 
