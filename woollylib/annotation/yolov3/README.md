@@ -2,6 +2,8 @@
 
 The goal is to create text files in darknet yolo format that will be fed to training to the CNN. Below is explained pretty much how to use the functionalities.
 
+**Disclaimer:** Credits to ManivannanMurugavel, you can find his repo here [Yolo-Annotation-Tool-New](https://github.com/ManivannanMurugavel/Yolo-Annotation-Tool-New-). Current code here is somewhat a correction of his repo.
+
 Create a folder names `Images` and put all image files in this folder make sure images are `.jp*g` format
 
 Before starting to annotate change image size to default size images.
