@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 from woollylib.models.model import get_norm_layer, WyConv2d
+from woollylib.models.transform.spatial_transformer import SpatialTransformer
 
 
 class WyBlock(nn.Module):
@@ -53,6 +54,8 @@ class CustomResNet(nn.Module):
         self.in_planes: int = 64
         self.classes: int = classes
         self.block: WyBlock = block
+
+        # self.stn = SpatialTransformer()
 
         self.feature = nn.Sequential(
             self._pre_layer(norm, ctype='vanila'),
@@ -110,6 +113,9 @@ class CustomResNet(nn.Module):
         return nn.Sequential(*layers)
 
     def forward(self, x, dropout=False):
+        # stn network
+        # x = self.stn(x)
+
         # Feature Layer
         out = self.feature(x)
 
