@@ -3,7 +3,7 @@ fixed_height = 800
 import glob
 from PIL import Image
 
-for im in glob.glob('./Images'+'/**.jp*g'):
+for im in glob.glob('./images'+'/**.jp*g'):
     try:
         image = Image.open(im)
         height_percent = (fixed_height / float(image.size[1]))

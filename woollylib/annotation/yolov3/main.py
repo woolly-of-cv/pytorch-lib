@@ -218,7 +218,7 @@ class LabelTool():
                 "Error!", message="The specified dir doesn't exist!")
             return
         # get image list
-        self.imageDir = os.path.join(s, 'Images')
+        self.imageDir = os.path.join(s, 'images')
         self.imageList = glob.glob(os.path.join(self.imageDir, '*.jp*g'))
         if len(self.imageList) == 0:
             print('No .jpeg/.jpg images found in the specified dir!')
@@ -233,7 +233,7 @@ class LabelTool():
         # set up output dir
         # if not os.path.exists(os.path.join(s, 'Labels')):
         #     os.mkdir(os.path.join(s, 'Labels'))
-        self.outDir = os.path.join(s, 'Labels')
+        self.outDir = os.path.join(s, 'labels')
         if not os.path.exists(self.outDir):
             os.mkdir(self.outDir)
         self.loadImage()

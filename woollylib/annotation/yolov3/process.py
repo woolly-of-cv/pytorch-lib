@@ -29,7 +29,7 @@ for pathAndFilename in glob.iglob(os.path.join(current_dir, "*.jp*g")):
     title, ext = os.path.splitext(os.path.basename(pathAndFilename))
     if counter == index_test:
         counter = 1
-        file_test.write(root_dir + "/" + current_dir + "/" + title + '.jpg' + "\n")
+        file_test.write(root_dir + "/" + current_dir + "/" + title + ext + "\n")
     else:
-        file_train.write(root_dir + "/" + current_dir + "/" + title + '.jpg' + "\n")
+        file_train.write(root_dir + "/" + current_dir + "/" + title + ext + "\n")
         counter = counter + 1

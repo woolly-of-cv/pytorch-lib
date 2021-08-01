@@ -4,7 +4,7 @@ The goal is to create text files in darknet yolo format that will be fed for tra
 
 **Disclaimer:** Credits to ManivannanMurugavel, you can find his repo here [Yolo-Annotation-Tool-New](https://github.com/ManivannanMurugavel/Yolo-Annotation-Tool-New-). Current code here is somewhat a correction of his repo.
 
-Create a folder names `Images` and put all image files in this folder make sure images are `.jp*g` format
+Create a folder names `images` and put all image files in this folder make sure images are `.jp*g` format
 
 Before starting to annotate change image size to default size images.
 
@@ -43,7 +43,7 @@ once we have annotated images we will create test and train splits
 ```
 
 ```
-python3 process.py -a Images -p 1
+python3 process.py -a images -p 1
 ```
 
 
